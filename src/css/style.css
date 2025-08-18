@@ -1,0 +1,24 @@
+.share-result {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.share-result h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.share-item {
+  margin: 8px 0;
+  padding: 8px;
+  background-color: white;
+  border-radius: 4px;
+  border-left: 3px solid #007bff;
+}
+
+.share-item strong {
+  color: #555;
+}

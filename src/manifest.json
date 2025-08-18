@@ -1,0 +1,40 @@
+{
+  "name": "Share Target Example",
+  "short_name": "ShareTarget",
+  "description": "Example app demonstrating share target functionality",
+  "start_url": "/?utm_source=pwa",
+  "display": "standalone",
+  "theme_color": "#31d53d",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "assets/icon/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "share_target": {
+    "action": "/_share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": [
+            "*/*"
+          ]
+        }
+      ]
+    }
+  }
+}
