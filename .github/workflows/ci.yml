@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 20
+  JAVA_VERSION: 21
+
+jobs:
+  build:
+    name: Build web assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Build web assets
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+  android:
+    name: Build Android platform
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Copy web assets to native platform
+        run: npx ionic capacitor copy android --no-build
+      - name: Update native platform
+        run: npx ionic capacitor update android
+      - name: Build with Gradle
+        working-directory: android
+        run: ./gradlew build
+  ios:
+    name: Build iOS platform
+    runs-on: macos-15
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Copy web assets to native platform
+        run: npx ionic capacitor copy ios --no-build
+      - name: Update native platform
+        run: npx ionic capacitor update ios
+      - name: Build and archive with xcodebuild
+        working-directory: ios
+        run: xcodebuild
+          -workspace App/App.xcworkspace
+          -scheme App
+          -archivePath App/build/App.xarchive
+          clean build archive
+          CODE_SIGN_IDENTITY=""
+          CODE_SIGNING_REQUIRED=NO
+          CODE_SIGNING_ALLOWED="NO"
+          CODE_SIGN_ENTITLEMENTS=""
+  deploy:
+    name: Deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        id: cloudflare-deployment
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+          directory: dist
+      - name: Comment the preview url
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.number }}
+          body: |
+            Deploy preview available at: ${{ steps.cloudflare-deployment.outputs.url }}
+
+            Built with commit ${{ github.event.pull_request.head.sha }}.
