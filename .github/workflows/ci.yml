@@ -26,6 +26,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Configure the Capawesome npm registry
+        run: |
+          echo "//npm.registry.capawesome.io/:_authToken=${{ secrets.CAPAWESOME_NPM_REGISTRY_TOKEN }}" >> .npmrc
       - name: Install Node.js dependencies
         run: npm ci
       - name: Build web assets
@@ -56,6 +59,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ env.JAVA_VERSION }}
+      - name: Configure the Capawesome npm registry
+        run: |
+          echo "//npm.registry.capawesome.io/:_authToken=${{ secrets.CAPAWESOME_NPM_REGISTRY_TOKEN }}" >> .npmrc
       - name: Install dependencies
         run: npm ci
       - name: Copy web assets to native platform
@@ -81,6 +87,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Configure the Capawesome npm registry
+        run: |
+          echo "//npm.registry.capawesome.io/:_authToken=${{ secrets.CAPAWESOME_NPM_REGISTRY_TOKEN }}" >> .npmrc
       - name: Install Node.js dependencies
         run: npm ci
       - name: Copy web assets to native platform
