@@ -2,16 +2,16 @@ PODS:
   - Capacitor (7.0.0):
     - CapacitorCordova
   - CapacitorCordova (7.0.0)
-  - CapacitorFilesystem (7.1.3):
+  - CapacitorFilesystem (7.1.4):
     - Capacitor
-    - IONFilesystemLib (~> 1.0)
+    - IONFilesystemLib (~> 1.0.1)
   - CapawesomeCapacitorFilePicker (7.2.0):
     - Capacitor
   - CapawesomeTeamCapacitorFileOpener (7.0.1):
     - Capacitor
   - CapawesomeTeamCapacitorShareTarget (0.1.0):
     - Capacitor
-  - IONFilesystemLib (1.0.0)
+  - IONFilesystemLib (1.0.1)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -42,11 +42,11 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Capacitor: 82d1f3b4480d66b5996814f74500dcbc0908558c
   CapacitorCordova: 345f93b7edd121db98e4ec20ac94d6d7bcaf7e48
-  CapacitorFilesystem: 0329ace667c6b971410cab3619dfb98a39cc3b86
+  CapacitorFilesystem: f9bd850c41e048180e5dc0cbb90f2033ede9d2cc
   CapawesomeCapacitorFilePicker: 0f4a913a00e39dd77213449f0d917e92f35a5ca9
   CapawesomeTeamCapacitorFileOpener: 001f0b5e2db8931c24b0887f483bd00b049a6989
   CapawesomeTeamCapacitorShareTarget: 46ca37aa5fe8d1d8c152125f5a5f0d753b2ddea1
-  IONFilesystemLib: ceacae793975039530458eabab0c495c70515a0d
+  IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
 
 PODFILE CHECKSUM: 3af81065060dea395ab876536b5176cf988a6541
 
