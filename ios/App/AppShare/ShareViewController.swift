@@ -3,6 +3,12 @@ import Social
 import UIKit
 import UniformTypeIdentifiers
 
+struct SharedFileData {
+    let uri: String
+    let name: String?
+    let mimeType: String?
+}
+
 class ShareViewController: UIViewController {
 
     private let appGroupIdentifier = "group.dev.robingenz.example.plugin"
@@ -54,7 +60,22 @@ class ShareViewController: UIViewController {
         }
     }
 
-    private func sendData(with textValues: [String], fileValues: [String], title: String) {
+    public func getMimeTypeFromUrl(_ url: URL) -> String {
+        let fileExtension = url.pathExtension as CFString
+        guard let extUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, nil)?.takeUnretainedValue() else {
+            return ""
+        }
+        guard let mimeUTI = UTTypeCopyPreferredTagWithClass(extUTI, kUTTagClassMIMEType) else {
+            return ""
+        }
+        return mimeUTI.takeRetainedValue() as String
+    }
+
+    public func getNameFromUrl(_ url: URL) -> String {
+        return url.lastPathComponent
+    }
+
+    private func sendData(with textValues: [String], fileValues: [SharedFileData], title: String) {
         var urlComps = URLComponents(string: "\(urlScheme)://?")!
         var queryItems: [URLQueryItem] = []
 
@@ -68,9 +89,13 @@ class ShareViewController: UIViewController {
             }
         }
 
-        for file in fileValues {
-            if !file.isEmpty {
-                queryItems.append(URLQueryItem(name: "file", value: file))
+        for (index, file) in fileValues.enumerated() {
+            queryItems.append(URLQueryItem(name: "fileUri\(index)", value: file.uri))
+            if let name = file.name {
+                queryItems.append(URLQueryItem(name: "fileName\(index)", value: name))
+            }
+            if let mimeType = file.mimeType {
+                queryItems.append(URLQueryItem(name: "fileMimeType\(index)", value: mimeType))
             }
         }
 
@@ -95,7 +120,7 @@ class ShareViewController: UIViewController {
         }
 
         var textValues: [String] = []
-        var fileValues: [String] = []
+        var fileValues: [SharedFileData] = []
         let title = item.attributedTitle?.string ?? item.attributedContentText?.string ?? ""
         let dispatchGroup = DispatchGroup()
 
@@ -108,12 +133,15 @@ class ShareViewController: UIViewController {
 
                     if let url = item as? URL {
                         if let sharedPath = self?.copyFileToSharedContainer(url) {
-                            fileValues.append(sharedPath)
+                            let fileName = self?.getNameFromUrl(url)
+                            let mimeType = self?.getMimeTypeFromUrl(url)
+                            let finalMimeType = mimeType?.isEmpty == false ? mimeType : nil
+                            fileValues.append(SharedFileData(uri: sharedPath, name: fileName, mimeType: finalMimeType))
                         }
                     } else if let image = item as? UIImage {
                         if let data = image.pngData() {
                             let base64String = data.base64EncodedString()
-                            fileValues.append("data:image/png;base64,\(base64String)")
+                            fileValues.append(SharedFileData(uri: "data:image/png;base64,\(base64String)", name: nil, mimeType: "image/png"))
                         }
                     }
                 }
@@ -126,7 +154,10 @@ class ShareViewController: UIViewController {
 
                     if let url = item as? URL {
                         if let sharedPath = self?.copyFileToSharedContainer(url) {
-                            fileValues.append(sharedPath)
+                            let fileName = self?.getNameFromUrl(url)
+                            let mimeType = self?.getMimeTypeFromUrl(url)
+                            let finalMimeType = mimeType?.isEmpty == false ? mimeType : nil
+                            fileValues.append(SharedFileData(uri: sharedPath, name: fileName, mimeType: finalMimeType))
                         }
                     }
                 }

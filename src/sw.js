@@ -46,7 +46,7 @@ async function handleShareTarget(request) {
     };
 
     if (files.length > 0) {
-      const fileUrls = [];
+      const sharedFiles = [];
       const cache = await caches.open('share-target-files');
 
       for (const file of files) {
@@ -63,12 +63,16 @@ async function handleShareTarget(request) {
           });
           await cache.put(cacheKey, response);
 
-          fileUrls.push(`/_share-file/${fileId}`);
+          sharedFiles.push({
+            uri: `/_share-file/${fileId}`,
+            name: file.name || undefined,
+            mimeType: file.type || undefined,
+          });
         }
       }
 
-      if (fileUrls.length > 0) {
-        shareData.files = fileUrls;
+      if (sharedFiles.length > 0) {
+        shareData.files = sharedFiles;
       }
     }
 
@@ -85,8 +89,14 @@ async function handleShareTarget(request) {
     }
 
     if (shareData.files && shareData.files.length > 0) {
-      shareData.files.forEach((fileUrl, index) => {
-        redirectUrl.searchParams.set(`file${index}`, fileUrl);
+      shareData.files.forEach((file, index) => {
+        redirectUrl.searchParams.set(`fileUri${index}`, file.uri);
+        if (file.name) {
+          redirectUrl.searchParams.set(`fileName${index}`, file.name);
+        }
+        if (file.mimeType) {
+          redirectUrl.searchParams.set(`fileMimeType${index}`, file.mimeType);
+        }
       });
     }
 

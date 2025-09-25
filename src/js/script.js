@@ -59,18 +59,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const filesContainer = document.querySelector('#files-container');
       filesContainer.innerHTML = ''; // Clear previous files
       event.files.forEach(file => {
-        const fileSrc = file.startsWith('http')
-          ? file
-          : Capacitor.convertFileSrc(file);
-        const fileItem = document.createElement('ion-item');
-        fileItem.innerHTML = `
+        const fileSrc = file.uri.startsWith('http')
+          ? file.uri
+          : Capacitor.convertFileSrc(file.uri);
+        filesContainer.innerHTML = `
           <ion-item>
-            <ion-input type="text" value="${file}" readonly>
-                <ion-img src="${fileSrc}" alt="Preview" />
-            </ion-input>
+            <ion-label position="stacked">File Preview</ion-label>
+            <ion-img src="${fileSrc}" alt="Preview" />
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">File URI</ion-label>
+            <ion-input type="text" value="${file.uri}" readonly></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">File Name</ion-label>
+            <ion-input type="text" value="${file.name}" readonly></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">File MimeType</ion-label>
+            <ion-input type="text" value="${file.mimeType}" readonly></ion-input>
           </ion-item>
         `;
-        filesContainer.appendChild(fileItem);
       });
     } else {
       document.querySelector('#files-container').innerHTML = '';
