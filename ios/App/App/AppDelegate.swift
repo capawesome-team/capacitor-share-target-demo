@@ -1,6 +1,6 @@
 import UIKit
 import Capacitor
-import CapawesomeTeamCapacitorShareTarget
+import ShareTargetPlugin
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
