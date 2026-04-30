@@ -1,6 +1,6 @@
 # capacitor-share-target-demo
 
-⚡️ Simple Capacitor app to demonstrate the use of the [Share Target](https://github.com/capawesome-team/capacitor-share-target) plugin.
+Simple Capacitor app to demonstrate the use of the [Share Target](https://capawesome.io/plugins/share-target/) plugin. Source code for the [step-by-step video tutorial](https://www.youtube.com/watch?v=a64fF_q69po).
 
 ## Development 💻
 
